@@ -1,4 +1,5 @@
 <?php
+// src/Form/EquipeType.php - Version corrigée sans JSON_CONTAINS
 namespace App\Form;
 
 use App\Entity\Equipe;
@@ -23,11 +24,10 @@ class EquipeType extends AbstractType
                 'class' => User::class,
                 'choice_label' => 'nom',
                 'query_builder' => function (EntityRepository $er) {
+                    // Récupérer tous les utilisateurs sans équipe ou avec des rôles USER/ADMIN
                     return $er->createQueryBuilder('u')
-                        ->where('u.equipe IS NULL OR u.equipe = :currentEquipe')
-                        ->andWhere('JSON_CONTAINS(u.roles, :userRole) = 1')
-                        ->setParameter('userRole', '"ROLE_USER"')
-                        ->setParameter('currentEquipe', null);
+                        ->where('u.equipe IS NULL')
+                        ->orderBy('u.nom', 'ASC');
                 },
                 'multiple' => true,
                 'expanded' => true,
@@ -37,15 +37,14 @@ class EquipeType extends AbstractType
             ->add('chefEquipe', EntityType::class, [
                 'class' => User::class,
                 'choice_label' => 'nom',
-                'query_builder' => function (EntityRepository $er) {
-                    return $er->createQueryBuilder('u')
-                        ->where('JSON_CONTAINS(u.roles, :adminRole) = 1 OR JSON_CONTAINS(u.roles, :userRole) = 1')
-                        ->setParameter('adminRole', '"ROLE_ADMIN"')
-                        ->setParameter('userRole', '"ROLE_USER"');
-                },
                 'placeholder' => 'Sélectionnez un chef d\'équipe',
                 'required' => false,
-                'attr' => ['class' => 'form-control']
+                'attr' => ['class' => 'form-control'],
+                'query_builder' => function (EntityRepository $er) {
+                    // Récupérer tous les utilisateurs (ils peuvent tous être chefs)
+                    return $er->createQueryBuilder('u')
+                        ->orderBy('u.nom', 'ASC');
+                },
             ])
         ;
     }

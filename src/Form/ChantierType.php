@@ -59,15 +59,22 @@ class ChantierType extends AbstractType
             ])
             ->add('chefChantier', EntityType::class, [
                 'class' => User::class,
-                'choice_label' => 'nom',
+                'choice_label' => function(User $user) {
+                    // Afficher le nom et indiquer si c'est un admin
+                    $label = $user->getNom();
+                    if ($user->isAdmin()) {
+                        $label .= ' (Admin)';
+                    }
+                    return $label;
+                },
                 'label' => 'Chef de Chantier',
                 'placeholder' => 'Sélectionnez un chef',
                 'required' => false,
                 'attr' => ['class' => 'form-select'],
                 'query_builder' => function (EntityRepository $er) {
+                    // Récupérer tous les utilisateurs, on filtrera côté affichage
                     return $er->createQueryBuilder('u')
-                        ->where('JSON_CONTAINS(u.roles, :adminRole) = 1')
-                        ->setParameter('adminRole', '"ROLE_ADMIN"');
+                        ->orderBy('u.nom', 'ASC');
                 },
             ])
             ->add('imageFile', FileType::class, [
