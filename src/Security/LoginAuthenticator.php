@@ -61,8 +61,8 @@ class LoginAuthenticator extends AbstractLoginFormAuthenticator
             return new RedirectResponse($targetPath);
         }
 
-        // Redirection après connexion réussie
-        return new RedirectResponse($this->urlGenerator->generate('app_chantier_index')); // Change avec ta route
+        // Redirection après connexion réussie vers la page d'accueil
+        return new RedirectResponse($this->urlGenerator->generate('app_home'));
     }
 
     protected function getLoginUrl(Request $request): string

@@ -3,110 +3,70 @@
 {% block title %}BTP Manager - Administration{% endblock %}
 
 {% block body %}
-<div class="container-fluid">
-    {# Header avec navigation selon votre maquette #}
-    <nav class="navbar navbar-expand-lg" style="background-color: #212528;">
-        <div class="container">
-            <a class="navbar-brand text-white fw-bold" href="{{ path('app_home') }}">BTP Manager</a>
-            <div class="navbar-nav ms-auto">
-                <a class="nav-link text-white" href="{{ path('app_equipe_index') }}">Équipes</a>
-                <a class="nav-link text-white" href="{{ path('app_chantier_index') }}">Chantiers</a>
-                <a class="nav-link text-white" href="{{ path('app_affectation_index') }}">Affectation</a>
-                <a class="nav-link text-white" href="{{ path('app_user_index') }}">Ouvrier</a>
-                <a class="nav-link" href="{{ path('app_logout') }}" 
-                   style="background-color: #CB4549; color: white; border-radius: 5px; padding: 8px 16px; text-decoration: none;">
-                   Déconnection
-                </a>
+<div class="container mt-4">
+    {# Bannière de bienvenue selon votre maquette #}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="p-4 rounded text-center text-dark" 
+                 style="background: linear-gradient(135deg, #7F7F7F 0%, #A0A0A0 100%);">
+                <h2 class="mb-0">Bienvenue sur la gestion des équipes et chantiers</h2>
             </div>
         </div>
-    </nav>
+    </div>
 
-    <div class="container mt-4">
-        {# Bannière de bienvenue selon votre maquette #}
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="p-4 rounded text-center text-dark" 
-                     style="background: linear-gradient(135deg, #7F7F7F 0%, #A0A0A0 100%);">
-                    <h2 class="mb-0">Bienvenue sur la gestion des équipes et chantiers</h2>
+    {# Cards selon votre maquette #}
+    <div class="row g-4">
+        {# Card Équipes #}
+        <div class="col-md-6">
+            <div class="card h-100 text-white" 
+                 style="background: linear-gradient(135deg, #5EADF9 0%, #457EF7 100%); border-radius: 20px;">
+                <div class="card-body text-center p-4">
+                    <h3 class="card-title mb-3">Équipes</h3>
+                    <p class="card-text mb-4">Gérez les équipes travaillant sur vos projets.</p>
+                    <a href="{{ path('app_equipe_index') }}" 
+                       class="btn btn-light btn-lg rounded-pill px-5">Voir</a>
                 </div>
             </div>
         </div>
 
-        {# Cards selon votre maquette #}
-        <div class="row g-4">
-            {# Card Équipes #}
-            <div class="col-md-6">
-                <div class="card h-100 text-white" 
-                     style="background: linear-gradient(135deg, #5EADF9 0%, #457EF7 100%); border-radius: 20px;">
-                    <div class="card-body text-center p-4">
-                        <h3 class="card-title mb-3">Équipes</h3>
-                        <p class="card-text mb-4">Gérez les équipes travaillant sur vos projets.</p>
-                        <a href="{{ path('app_equipe_index') }}" 
-                           class="btn btn-light btn-lg rounded-pill px-5">Voir</a>
-                    </div>
+        {# Card Affectations #}
+        <div class="col-md-6">
+            <div class="card h-100 text-white" 
+                 style="background: linear-gradient(135deg, #5EADF9 0%, #457EF7 100%); border-radius: 20px;">
+                <div class="card-body text-center p-4">
+                    <h3 class="card-title mb-3">Affectations</h3>
+                    <p class="card-text mb-4">Suivez les affectations de vos ouvriers.</p>
+                    <a href="{{ path('app_affectation_index') }}" 
+                       class="btn btn-light btn-lg rounded-pill px-5">Voir</a>
                 </div>
             </div>
+        </div>
 
-            {# Card Affectations #}
-            <div class="col-md-6">
-                <div class="card h-100 text-white" 
-                     style="background: linear-gradient(135deg, #5EADF9 0%, #457EF7 100%); border-radius: 20px;">
-                    <div class="card-body text-center p-4">
-                        <h3 class="card-title mb-3">Affectations</h3>
-                        <p class="card-text mb-4">Suivez les affectations de vos ouvriers.</p>
-                        <a href="{{ path('app_affectation_index') }}" 
-                           class="btn btn-light btn-lg rounded-pill px-5">Voir</a>
-                    </div>
+        {# Card Chantiers #}
+        <div class="col-md-6">
+            <div class="card h-100 text-white" 
+                 style="background: linear-gradient(135deg, #5EADF9 0%, #457EF7 100%); border-radius: 20px;">
+                <div class="card-body text-center p-4">
+                    <h3 class="card-title mb-3">Chantiers</h3>
+                    <p class="card-text mb-4">Consultez la liste des chantiers en cours.</p>
+                    <a href="{{ path('app_chantier_index') }}" 
+                       class="btn btn-light btn-lg rounded-pill px-5">Voir</a>
                 </div>
             </div>
+        </div>
 
-            {# Card Chantiers #}
-            <div class="col-md-6">
-                <div class="card h-100 text-white" 
-                     style="background: linear-gradient(135deg, #5EADF9 0%, #457EF7 100%); border-radius: 20px;">
-                    <div class="card-body text-center p-4">
-                        <h3 class="card-title mb-3">Chantiers</h3>
-                        <p class="card-text mb-4">Consultez la liste des chantiers en cours.</p>
-                        <a href="{{ path('app_chantier_index') }}" 
-                           class="btn btn-light btn-lg rounded-pill px-5">Voir</a>
-                    </div>
-                </div>
-            </div>
-
-            {# Card Ouvriers #}
-            <div class="col-md-6">
-                <div class="card h-100 text-white" 
-                     style="background: linear-gradient(135deg, #5EADF9 0%, #457EF7 100%); border-radius: 20px;">
-                    <div class="card-body text-center p-4">
-                        <h3 class="card-title mb-3">Ouvriers</h3>
-                        <p class="card-text mb-4">Gérez vos ouvriers et leurs compétences.</p>
-                        <a href="{{ path('app_user_index') }}" 
-                           class="btn btn-light btn-lg rounded-pill px-5">Voir</a>
-                    </div>
+        {# Card Ouvriers #}
+        <div class="col-md-6">
+            <div class="card h-100 text-white" 
+                 style="background: linear-gradient(135deg, #5EADF9 0%, #457EF7 100%); border-radius: 20px;">
+                <div class="card-body text-center p-4">
+                    <h3 class="card-title mb-3">Ouvriers</h3>
+                    <p class="card-text mb-4">Gérez vos ouvriers et leurs compétences.</p>
+                    <a href="{{ path('app_user_index') }}" 
+                       class="btn btn-light btn-lg rounded-pill px-5">Voir</a>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
-<style>
-    body {
-        background-color: #f8f9fa;
-        font-family: 'Inter', sans-serif;
-    }
-    
-    .card {
-        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-        transition: transform 0.2s;
-    }
-    
-    .card:hover {
-        transform: translateY(-5px);
-    }
-    
-    .btn-light:hover {
-        background-color: #e2e6ea;
-        border-color: #dae0e5;
-    }
-</style>
 {% endblock %}

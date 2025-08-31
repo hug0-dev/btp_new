@@ -1,4 +1,4 @@
-{# templates/base.html.twig - Template de base avec navigation dynamique #}
+{# templates/base.html.twig - Template de base sans lien Compétences #}
 <!DOCTYPE html>
 <html>
     <head>
@@ -119,7 +119,7 @@
                     <div class="collapse navbar-collapse" id="navbarNav">
                         <ul class="navbar-nav me-auto">
                             {% if app.user.isAdmin %}
-                                {# Navigation Admin #}
+                                {# Navigation Admin - SANS Compétences #}
                                 <li class="nav-item">
                                     <a class="nav-link text-white" href="{{ path('app_equipe_index') }}">
                                         <i class="fas fa-users me-1"></i>Équipes
@@ -137,12 +137,7 @@
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link text-white" href="{{ path('app_user_index') }}">
-                                        <i class="fas fa-user-hard-hat me-1"></i>Ouvriers
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link text-white" href="{{ path('app_competence_index') }}">
-                                        <i class="fas fa-tools me-1"></i>Compétences
+                                        <i class="fas fa-user-hard-hat me-1"></i>Ouvrier
                                     </a>
                                 </li>
                             {% else %}

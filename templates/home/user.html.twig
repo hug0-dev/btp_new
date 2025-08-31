@@ -3,111 +3,74 @@
 {% block title %}BTP Manager - Mes Affectations{% endblock %}
 
 {% block body %}
-<div class="container-fluid">
-    {# Header simplifié pour utilisateurs #}
-    <nav class="navbar navbar-expand-lg" style="background-color: #212528;">
-        <div class="container">
-            <a class="navbar-brand text-white fw-bold" href="{{ path('app_home') }}">BTP Manager</a>
-            <div class="navbar-nav ms-auto">
-                <span class="nav-text text-white me-3">Bonjour, {{ user.nom }}</span>
-                <a class="nav-link" href="{{ path('app_logout') }}" 
-                   style="background-color: #CB4549; color: white; border-radius: 5px; padding: 8px 16px; text-decoration: none;">
-                   Déconnection
-                </a>
+<div class="container mt-4">
+    {# Bannière de bienvenue #}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="p-4 rounded text-center text-dark" 
+                 style="background: linear-gradient(135deg, #7F7F7F 0%, #A0A0A0 100%);">
+                <h2 class="mb-0">Mes Affectations et Chantiers</h2>
             </div>
         </div>
-    </nav>
+    </div>
 
-    <div class="container mt-4">
-        {# Bannière de bienvenue #}
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="p-4 rounded text-center text-dark" 
-                     style="background: linear-gradient(135deg, #7F7F7F 0%, #A0A0A0 100%);">
-                    <h2 class="mb-0">Mes Affectations et Chantiers</h2>
+    {# Cards pour utilisateur #}
+    <div class="row g-4 justify-content-center">
+        {# Card Mes Chantiers #}
+        <div class="col-md-6">
+            <div class="card h-100 text-white" 
+                 style="background: linear-gradient(135deg, #5EADF9 0%, #457EF7 100%); border-radius: 20px;">
+                <div class="card-body text-center p-4">
+                    <h3 class="card-title mb-3">Mes Chantiers</h3>
+                    <p class="card-text mb-4">Consultez vos chantiers assignés.</p>
+                    <a href="{{ path('app_chantier_index') }}" 
+                       class="btn btn-light btn-lg rounded-pill px-5">Voir</a>
                 </div>
             </div>
         </div>
 
-        {# Cards pour utilisateur #}
-        <div class="row g-4 justify-content-center">
-            {# Card Mes Chantiers #}
-            <div class="col-md-6">
-                <div class="card h-100 text-white" 
-                     style="background: linear-gradient(135deg, #5EADF9 0%, #457EF7 100%); border-radius: 20px;">
-                    <div class="card-body text-center p-4">
-                        <h3 class="card-title mb-3">Mes Chantiers</h3>
-                        <p class="card-text mb-4">Consultez vos chantiers assignés.</p>
-                        <a href="{{ path('app_chantier_index') }}" 
-                           class="btn btn-light btn-lg rounded-pill px-5">Voir</a>
-                    </div>
-                </div>
-            </div>
-
-            {# Card Mes Affectations #}
-            <div class="col-md-6">
-                <div class="card h-100 text-white" 
-                     style="background: linear-gradient(135deg, #5EADF9 0%, #457EF7 100%); border-radius: 20px;">
-                    <div class="card-body text-center p-4">
-                        <h3 class="card-title mb-3">Mes Affectations</h3>
-                        <p class="card-text mb-4">Suivez vos affectations d'équipe.</p>
-                        <a href="{{ path('app_affectation_index') }}" 
-                           class="btn btn-light btn-lg rounded-pill px-5">Voir</a>
-                    </div>
+        {# Card Mes Affectations #}
+        <div class="col-md-6">
+            <div class="card h-100 text-white" 
+                 style="background: linear-gradient(135deg, #5EADF9 0%, #457EF7 100%); border-radius: 20px;">
+                <div class="card-body text-center p-4">
+                    <h3 class="card-title mb-3">Mes Affectations</h3>
+                    <p class="card-text mb-4">Suivez vos affectations d'équipe.</p>
+                    <a href="{{ path('app_affectation_index') }}" 
+                       class="btn btn-light btn-lg rounded-pill px-5">Voir</a>
                 </div>
             </div>
         </div>
+    </div>
 
-        {# Informations utilisateur #}
-        {% if user.equipe %}
-        <div class="row mt-5">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h4 class="mb-0">Mon Équipe</h4>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <strong>Équipe:</strong> {{ user.equipe.nomEquipe }}<br>
-                                <strong>Nombre de membres:</strong> {{ user.equipe.nombre }}<br>
-                                {% if user.equipe.chefEquipe %}
-                                    <strong>Chef d'équipe:</strong> {{ user.equipe.chefEquipe.nom }}
-                                {% endif %}
-                            </div>
-                            <div class="col-md-6">
-                                <strong>Compétences de l'équipe:</strong><br>
-                                {% for competence in user.equipe.competences %}
-                                    <span class="badge bg-secondary me-1">{{ competence }}</span>
-                                {% endfor %}
-                            </div>
+    {# Informations utilisateur #}
+    {% if user.equipe %}
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">Mon Équipe</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <strong>Équipe:</strong> {{ user.equipe.nomEquipe }}<br>
+                            <strong>Nombre de membres:</strong> {{ user.equipe.nombre }}<br>
+                            {% if user.equipe.chefEquipe %}
+                                <strong>Chef d'équipe:</strong> {{ user.equipe.chefEquipe.nom }}
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Compétences de l'équipe:</strong><br>
+                            {% for competence in user.equipe.competences %}
+                                <span class="badge bg-secondary me-1">{{ competence }}</span>
+                            {% endfor %}
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        {% endif %}
     </div>
+    {% endif %}
 </div>
-
-<style>
-    body {
-        background-color: #f8f9fa;
-        font-family: 'Inter', sans-serif;
-    }
-    
-    .card {
-        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-        transition: transform 0.2s;
-    }
-    
-    .card:hover {
-        transform: translateY(-5px);
-    }
-    
-    .btn-light:hover {
-        background-color: #e2e6ea;
-        border-color: #dae0e5;
-    }
-</style>
 {% endblock %}
