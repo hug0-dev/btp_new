@@ -1,38 +1,98 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Liste des équipes{% endblock %}
+{% block title %}Liste des Équipes{% endblock %}
 
 {% block body %}
-    <div class="container mt-5">
-        <h1 class="mb-4">Liste des équipes</h1>
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1>Gestion des Équipes</h1>
+                <a href="{{ path('app_equipe_new') }}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Nouvelle Équipe
+                </a>
+            </div>
 
-        <div class="mb-3">
-            <a href="{{ path('app_equipe_new') }}" class="btn btn-primary">Créer une nouvelle équipe</a>
-        </div>
-
-        <div class="row">
-            {% for equipe in equipes %}
-                <div class="col-md-4">
-                    <div class="card mb-4 shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ equipe.nomEquipe }}</h5>
-                            <h6 class="card-subtitle mb-2 text-muted">Compétence : {{ equipe.competanceEquipe|join(', ') }}</h6>
-                            <p class="card-text"><strong>Membres :</strong> {{ equipe.nombre }}</p>
-                            <p class="card-text">
-                                <strong>Chef :</strong> {{ equipe.chefEquipe ? equipe.chefEquipe.nomOuvrier : 'Aucun' }}
-                            </p>
-                            <div class="d-flex justify-content-between">
-                                <a href="{{ path('app_equipe_show', {'id': equipe.id}) }}" class="btn btn-info btn-sm">Voir</a>
-                                <a href="{{ path('app_equipe_edit', {'id': equipe.id}) }}" class="btn btn-warning btn-sm">Modifier</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            {% else %}
-                <div class="col-12 text-center">
-                    <p>Aucune équipe trouvée</p>
+            {% for message in app.flashes('success') %}
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
             {% endfor %}
+
+            {% if equipes|length > 0 %}
+                <div class="row">
+                    {% for equipe in equipes %}
+                        <div class="col-md-6 col-lg-4 mb-4">
+                            <div class="card h-100">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0">{{ equipe.nomEquipe }}</h5>
+                                    <span class="badge bg-info">{{ equipe.nombre }} membre(s)</span>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <strong>Chef d'équipe:</strong><br>
+                                        {% if equipe.chefEquipe %}
+                                            <span class="badge bg-warning">{{ equipe.chefEquipe.nom }}</span>
+                                        {% else %}
+                                            <span class="text-muted">Non assigné</span>
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <strong>Compétences:</strong><br>
+                                        {% set competences = equipe.competences %}
+                                        {% if competences|length > 0 %}
+                                            {% for competence in competences %}
+                                                <span class="badge bg-secondary me-1">{{ competence }}</span>
+                                            {% endfor %}
+                                        {% else %}
+                                            <span class="text-muted">Aucune compétence</span>
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <strong>Membres:</strong><br>
+                                        {% if equipe.users|length > 0 %}
+                                            {% for user in equipe.users %}
+                                                <small class="d-block">• {{ user.nom }}</small>
+                                            {% endfor %}
+                                        {% else %}
+                                            <span class="text-muted">Aucun membre</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                    <div class="btn-group w-100" role="group">
+                                        <a href="{{ path('app_equipe_show', {'id': equipe.id}) }}" 
+                                           class="btn btn-outline-info btn-sm">
+                                            <i class="fas fa-eye"></i> Voir
+                                        </a>
+                                        <a href="{{ path('app_equipe_edit', {'id': equipe.id}) }}" 
+                                           class="btn btn-outline-warning btn-sm">
+                                            <i class="fas fa-edit"></i> Modifier
+                                        </a>
+                                        <form method="post" action="{{ path('app_equipe_delete', {'id': equipe.id}) }}" 
+                                              onsubmit="return confirm('Êtes-vous sûr?')" class="d-inline">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ equipe.id) }}">
+                                            <button class="btn btn-outline-danger btn-sm">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                    <p class="text-muted">Aucune équipe trouvée.</p>
+                    <a href="{{ path('app_equipe_new') }}" class="btn btn-primary">Créer la première équipe</a>
+                </div>
+            {% endif %}
         </div>
     </div>
+</div>
 {% endblock %}

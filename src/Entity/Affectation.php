@@ -1,12 +1,8 @@
 <?php
-
 namespace App\Entity;
 
 use App\Repository\AffectationRepository;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use App\Entity\Equipe;
-use App\Entity\Chantier;
 
 #[ORM\Entity(repositoryClass: AffectationRepository::class)]
 class Affectation
@@ -24,74 +20,30 @@ class Affectation
     #[ORM\JoinColumn(nullable: false, onDelete: "CASCADE")]
     private ?Chantier $chantier = null;
 
-    #[ORM\Column(type: Types::DATE_MUTABLE)]
-    private ?\DateTimeInterface $date_debut = null;
-
-    #[ORM\Column(type: Types::DATE_MUTABLE)]
-    private ?\DateTimeInterface $date_fin = null;
-
-    #[ORM\Column(length: 50, nullable: true)]
-    private ?string $nom = null;
-
-    public function getId(): ?int 
-    { 
-        return $this->id; 
-    }
-
-    public function getEquipe(): ?Equipe 
-    { 
-        return $this->equipe; 
-    }
-
-    public function setEquipe(?Equipe $equipe): static 
-    { 
-        $this->equipe = $equipe; 
-        return $this; 
-    }
-
-    public function getChantier(): ?Chantier 
-    { 
-        return $this->chantier; 
-    }
-
-    public function setChantier(?Chantier $chantier): static 
-    { 
-        $this->chantier = $chantier; 
-        return $this; 
-    }
-
-    public function getDateDebut(): ?\DateTimeInterface 
-    { 
-        return $this->date_debut; 
-    }
-
-    public function setDateDebut(\DateTimeInterface $date_debut): static 
-    { 
-        $this->date_debut = $date_debut; 
-        return $this; 
-    }
-
-    public function getDateFin(): ?\DateTimeInterface
+    public function getId(): ?int
     {
-        return $this->date_fin;
+        return $this->id;
     }
 
-    public function setDateFin(\DateTimeInterface $date_fin): static
+    public function getEquipe(): ?Equipe
     {
-        $this->date_fin = $date_fin;
+        return $this->equipe;
+    }
 
+    public function setEquipe(?Equipe $equipe): static
+    {
+        $this->equipe = $equipe;
         return $this;
     }
 
-    public function getNom(): ?string
+    public function getChantier(): ?Chantier
     {
-        return $this->nom;
+        return $this->chantier;
     }
 
-    public function setNom(?string $nom): static
+    public function setChantier(?Chantier $chantier): static
     {
-        $this->nom = $nom;
-
+        $this->chantier = $chantier;
         return $this;
     }
 }

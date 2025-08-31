@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Controller;
 
 use App\Entity\Chantier;
@@ -16,19 +15,34 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/chantier')]
-#[IsGranted('IS_AUTHENTICATED_FULLY')]
-
 class ChantierController extends AbstractController
 {
     #[Route('/', name: 'app_chantier_index', methods: ['GET'])]
+    #[IsGranted('IS_AUTHENTICATED_FULLY')]
     public function index(ChantierRepository $chantierRepository): Response
     {
+        $user = $this->getUser();
+        
+        // Si c'est un admin, il voit tous les chantiers
+        if ($user->isAdmin()) {
+            $chantiers = $chantierRepository->findAll();
+        } else {
+            // Si c'est un utilisateur normal, il ne voit que les chantiers de son équipe
+            $chantiers = [];
+            if ($user->getEquipe()) {
+                foreach ($user->getEquipe()->getAffectations() as $affectation) {
+                    $chantiers[] = $affectation->getChantier();
+                }
+            }
+        }
+
         return $this->render('chantier/index.html.twig', [
-            'chantiers' => $chantierRepository->findAll(),
+            'chantiers' => $chantiers,
         ]);
     }
 
     #[Route('/new', name: 'app_chantier_new', methods: ['GET', 'POST'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function new(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
     {
         $chantier = new Chantier();
@@ -70,14 +84,35 @@ class ChantierController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_chantier_show', methods: ['GET'])]
+    #[IsGranted('IS_AUTHENTICATED_FULLY')]
     public function show(Chantier $chantier): Response
     {
+        $user = $this->getUser();
+        
+        // Vérifier si l'utilisateur a le droit de voir ce chantier
+        if (!$user->isAdmin()) {
+            $hasAccess = false;
+            if ($user->getEquipe()) {
+                foreach ($user->getEquipe()->getAffectations() as $affectation) {
+                    if ($affectation->getChantier() === $chantier) {
+                        $hasAccess = true;
+                        break;
+                    }
+                }
+            }
+            
+            if (!$hasAccess) {
+                throw $this->createAccessDeniedException('Vous n\'avez pas accès à ce chantier.');
+            }
+        }
+
         return $this->render('chantier/show.html.twig', [
             'chantier' => $chantier,
         ]);
     }
 
     #[Route('/{id}/edit', name: 'app_chantier_edit', methods: ['GET', 'POST'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function edit(Request $request, Chantier $chantier, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
     {
         $form = $this->createForm(ChantierType::class, $chantier);
@@ -124,6 +159,7 @@ class ChantierController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_chantier_delete', methods: ['POST'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function delete(Request $request, Chantier $chantier, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete' . $chantier->getId(), $request->request->get('_token'))) {

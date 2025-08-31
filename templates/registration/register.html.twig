@@ -1,49 +1,192 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Register{% endblock %}
+{% block title %}Inscription{% endblock %}
+
+{% block stylesheets %}
+{{ parent() }}
+<style>
+    body {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px 0;
+    }
+    
+    .register-container {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+        overflow: hidden;
+        max-width: 450px;
+        width: 100%;
+    }
+    
+    .register-header {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--neutral-color) 100%);
+        color: white;
+        text-align: center;
+        padding: 2rem;
+    }
+    
+    .register-body {
+        padding: 2rem;
+    }
+    
+    .form-control {
+        border-radius: 10px;
+        border: 2px solid #e9ecef;
+        padding: 12px 15px;
+        font-size: 16px;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus {
+        border-color: var(--secondary-color);
+        box-shadow: 0 0 0 0.2rem rgba(94, 173, 249, 0.25);
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, var(--secondary-color) 0%, var(--accent-color) 100%);
+        border: none;
+        border-radius: 10px;
+        padding: 12px 30px;
+        font-weight: 600;
+        font-size: 16px;
+        transition: all 0.3s ease;
+        width: 100%;
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(94, 173, 249, 0.3);
+    }
+    
+    .btn-secondary {
+        border-radius: 10px;
+        padding: 12px 30px;
+        font-weight: 500;
+        width: 100%;
+    }
+    
+    .form-check-input:checked {
+        background-color: var(--secondary-color);
+        border-color: var(--secondary-color);
+    }
+    
+    .login-link {
+        color: var(--secondary-color);
+        text-decoration: none;
+        font-weight: 500;
+    }
+    
+    .login-link:hover {
+        color: var(--accent-color);
+        text-decoration: underline;
+    }
+    
+    .invalid-feedback {
+        display: block;
+        color: var(--danger-color);
+        font-size: 14px;
+        margin-top: 5px;
+    }
+    
+    .input-group-text {
+        border-radius: 10px 0 0 10px;
+        border: 2px solid #e9ecef;
+        border-right: none;
+        background-color: #f8f9fa;
+    }
+    
+    .input-group .form-control {
+        border-left: none;
+        border-radius: 0 10px 10px 0;
+    }
+    
+    /* Cacher la navbar sur les pages d'auth */
+    .navbar {
+        display: none;
+    }
+</style>
+{% endblock %}
 
 {% block body %}
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card shadow-lg">
-                <div class="card-body">
-                    <h1 class="text-center mb-4">Register</h1>
-
-                    {# Affichage des erreurs du formulaire #}
-                    {% if form_errors(registrationForm) %}
-                        <div class="alert alert-danger">
-                            {{ form_errors(registrationForm) }}
-                        </div>
-                    {% endif %}
-
-                    {# Début du formulaire #}
-                    {{ form_start(registrationForm, {'attr': {'class': 'needs-validation'}}) }}
-
-                    <div class="mb-3">
-                        {{ form_label(registrationForm.email, 'Email', {'label_attr': {'class': 'form-label'}}) }}
-                        {{ form_widget(registrationForm.email, {'attr': {'class': 'form-control', 'placeholder': 'Enter your email'}}) }}
-                        {{ form_errors(registrationForm.email) }}
-                    </div>
-
-                    <div class="mb-3">
-                        {{ form_label(registrationForm.plainPassword, 'Password', {'label_attr': {'class': 'form-label'}}) }}
-                        {{ form_widget(registrationForm.plainPassword, {'attr': {'class': 'form-control', 'placeholder': 'Enter your password'}}) }}
-                        {{ form_errors(registrationForm.plainPassword) }}
-                    </div>
-
-                    <div class="form-check mb-3">
-                        {{ form_widget(registrationForm.agreeTerms, {'attr': {'class': 'form-check-input'}}) }}
-                        {{ form_label(registrationForm.agreeTerms, 'I agree to the terms and conditions', {'label_attr': {'class': 'form-check-label'}}) }}
-                        {{ form_errors(registrationForm.agreeTerms) }}
-                    </div>
-
-                    <button type="submit" class="btn btn-primary w-100">Register</button>
-
-                    {{ form_end(registrationForm) }}
+<div class="register-container">
+    <div class="register-header">
+        <h1 class="h3 mb-1">
+            <i class="fas fa-hard-hat me-2"></i>
+            BTP Manager
+        </h1>
+        <p class="mb-0 opacity-75">Créez votre compte</p>
+    </div>
+    
+    <div class="register-body">
+        {{ form_start(registrationForm) }}
+            
+            <div class="mb-3">
+                {{ form_label(registrationForm.nom, 'Nom complet', {'label_attr': {'class': 'form-label'}}) }}
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="fas fa-user"></i>
+                    </span>
+                    {{ form_widget(registrationForm.nom, {'attr': {'class': 'form-control', 'placeholder': 'Votre nom complet'}}) }}
                 </div>
+                {{ form_errors(registrationForm.nom) }}
             </div>
-        </div>
+
+            <div class="mb-3">
+                {{ form_label(registrationForm.email, 'Email', {'label_attr': {'class': 'form-label'}}) }}
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="fas fa-envelope"></i>
+                    </span>
+                    {{ form_widget(registrationForm.email, {'attr': {'class': 'form-control', 'placeholder': 'votre@email.com'}}) }}
+                </div>
+                {{ form_errors(registrationForm.email) }}
+            </div>
+
+            <div class="mb-3">
+                {{ form_label(registrationForm.plainPassword, 'Mot de passe', {'label_attr': {'class': 'form-label'}}) }}
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="fas fa-lock"></i>
+                    </span>
+                    {{ form_widget(registrationForm.plainPassword, {'attr': {'class': 'form-control', 'placeholder': '••••••••'}}) }}
+                </div>
+                {{ form_errors(registrationForm.plainPassword) }}
+                <small class="text-muted">Minimum 6 caractères</small>
+            </div>
+
+            <div class="mb-4">
+                <div class="form-check">
+                    {{ form_widget(registrationForm.agreeTerms, {'attr': {'class': 'form-check-input'}}) }}
+                    {{ form_label(registrationForm.agreeTerms, 'J\'accepte les conditions d\'utilisation', {'label_attr': {'class': 'form-check-label'}}) }}
+                </div>
+                {{ form_errors(registrationForm.agreeTerms) }}
+            </div>
+
+            <div class="d-grid gap-2 mb-3">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-user-plus me-2"></i>Créer mon compte
+                </button>
+                
+                <a href="{{ path('app_login') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Retour à la connexion
+                </a>
+            </div>
+            
+            <div class="text-center">
+                <p class="text-muted mb-0">
+                    Déjà un compte ? 
+                    <a href="{{ path('app_login') }}" class="login-link">
+                        Connectez-vous ici
+                    </a>
+                </p>
+            </div>
+            
+        {{ form_end(registrationForm) }}
     </div>
 </div>
 {% endblock %}

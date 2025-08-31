@@ -1,0 +1,68 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Utilisateur - {{ user.nom }}{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h3 class="mb-0">{{ user.nom }}</h3>
+                    <div>
+                        {% for role in user.roles %}
+                            <span class="badge bg-{{ role == 'ROLE_ADMIN' ? 'danger' : 'primary' }}">
+                                {{ role == 'ROLE_ADMIN' ? 'Administrateur' : 'Utilisateur' }}
+                            </span>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-3">Email:</dt>
+                        <dd class="col-sm-9">{{ user.email }}</dd>
+
+                        <dt class="col-sm-3">Équipe:</dt>
+                        <dd class="col-sm-9">
+                            {% if user.equipe %}
+                                <span class="badge bg-info">{{ user.equipe.nomEquipe }}</span>
+                            {% else %}
+                                <span class="text-muted">Aucune équipe assignée</span>
+                            {% endif %}
+                        </dd>
+
+                        <dt class="col-sm-3">Compétences:</dt>
+                        <dd class="col-sm-9">
+                            {% if user.userCompetences|length > 0 %}
+                                {% for userCompetence in user.userCompetences %}
+                                    <span class="badge bg-secondary me-1">{{ userCompetence.competence.nom }}</span>
+                                {% endfor %}
+                            {% else %}
+                                <span class="text-muted">Aucune compétence</span>
+                            {% endif %}
+                        </dd>
+                    </dl>
+
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="{{ path('app_user_index') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Retour à la liste
+                        </a>
+                        <div>
+                            <a href="{{ path('app_user_edit', {'id': user.id}) }}" class="btn btn-warning">
+                                <i class="fas fa-edit"></i> Modifier
+                            </a>
+                            <form method="post" action="{{ path('app_user_delete', {'id': user.id}) }}" 
+                                  onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur?')" 
+                                  class="d-inline">
+                                <button class="btn btn-danger">
+                                    <i class="fas fa-trash"></i> Supprimer
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,9 +1,9 @@
 <?php
-
 namespace App\Form;
 
 use App\Entity\Chantier;
-use App\Entity\Ouvrier;
+use App\Entity\User;
+use App\Entity\Competence;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -26,32 +26,17 @@ class ChantierType extends AbstractType
                 'attr' => ['class' => 'form-control', 'placeholder' => 'Ex: Construction immeuble'],
                 'required' => true
             ])
-            ->add('chantier_prerequis', ChoiceType::class, [
-                'choices' => [
-                    'Maçon' => 'Maçon',
-                    'Coffreur' => 'Coffreur',
-                    'Ferrailleur' => 'Ferrailleur',
-                    'Terrassier' => 'Terrassier',
-                    'Conducteur d’engins' => 'Conducteur d’engins',
-                    'Manœuvre de chantier' => 'Manœuvre de chantier',
-                    'Grutier' => 'Grutier',
-                    'Plombier' => 'Plombier',
-                    'Électricien' => 'Électricien',
-                    'Peintre en bâtiment' => 'Peintre en bâtiment',
-                    'Plâtrier' => 'Plâtrier',
-                    'Carreleur' => 'Carreleur',
-                    'Menuisier' => 'Menuisier',
-                    'Parqueteur' => 'Parqueteur',
-                    'Serrurier-métallier' => 'Serrurier-métallier',
-                    'Chauffagiste' => 'Chauffagiste',
-                    'Enduiseur' => 'Enduiseur',
-                    'Vitrificateur' => 'Vitrificateur',
-                    'Solier-moquettiste' => 'Solier-moquettiste',
-                    'Staffeur-Ornemaniste' => 'Staffeur-Ornemaniste',
-                ],
+            ->add('chantier_prerequis', EntityType::class, [
+                'class' => Competence::class,
+                'choice_label' => 'nom',
+                'query_builder' => function (EntityRepository $er) {
+                    return $er->createQueryBuilder('c')
+                        ->where('c.actif = 1')
+                        ->orderBy('c.nom', 'ASC');
+                },
                 'multiple' => true,
                 'expanded' => true,
-                'placeholder' => 'Sélectionnez les compétences prérequises',
+                'label' => 'Compétences prérequises',
                 'required' => true,
                 'attr' => ['class' => 'form-check']
             ])
@@ -72,17 +57,17 @@ class ChantierType extends AbstractType
                 'attr' => ['class' => 'form-control'],
                 'required' => true
             ])
-            ->add('chef_chantier', EntityType::class, [
-                'class' => Ouvrier::class,
-                'choice_label' => 'nom_ouvrier',
+            ->add('chefChantier', EntityType::class, [
+                'class' => User::class,
+                'choice_label' => 'nom',
                 'label' => 'Chef de Chantier',
                 'placeholder' => 'Sélectionnez un chef',
                 'required' => false,
                 'attr' => ['class' => 'form-select'],
                 'query_builder' => function (EntityRepository $er) {
-                    return $er->createQueryBuilder('o')
-                        ->where('o.role = :role')
-                        ->setParameter('role', 'Chef');
+                    return $er->createQueryBuilder('u')
+                        ->where('JSON_CONTAINS(u.roles, :adminRole) = 1')
+                        ->setParameter('adminRole', '"ROLE_ADMIN"');
                 },
             ])
             ->add('imageFile', FileType::class, [

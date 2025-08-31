@@ -1,0 +1,87 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des Compétences{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1>Gestion des Compétences</h1>
+                <a href="{{ path('app_competence_new') }}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Nouvelle Compétence
+                </a>
+            </div>
+
+            {% for message in app.flashes('success') %}
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+
+            {% if competences|length > 0 %}
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Nom</th>
+                                <th>Description</th>
+                                <th>Status</th>
+                                <th>Utilisateurs</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for competence in competences %}
+                                <tr class="{{ not competence.isActif ? 'table-secondary' : '' }}">
+                                    <td>
+                                        <strong>{{ competence.nom }}</strong>
+                                        {% if not competence.isActif %}
+                                            <small class="text-muted">(Désactivée)</small>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ competence.description ?? '-' }}</td>
+                                    <td>
+                                        <span class="badge bg-{{ competence.isActif ? 'success' : 'secondary' }}">
+                                            {{ competence.isActif ? 'Active' : 'Inactive' }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">{{ competence.userCompetences|length }} utilisateur(s)</span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <form method="post" action="{{ path('app_competence_toggle', {'id': competence.id}) }}" class="d-inline">
+                                                <button type="submit" class="btn btn-sm btn-outline-{{ competence.isActif ? 'warning' : 'success' }}"
+                                                        title="{{ competence.isActif ? 'Désactiver' : 'Activer' }}">
+                                                    <i class="fas fa-{{ competence.isActif ? 'pause' : 'play' }}"></i>
+                                                </button>
+                                            </form>
+                                            
+                                            <form method="post" action="{{ path('app_competence_delete', {'id': competence.id}) }}" 
+                                                  onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette compétence?')" 
+                                                  class="d-inline">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ competence.id) }}">
+                                                <button class="btn btn-sm btn-outline-danger">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-tools fa-3x text-muted mb-3"></i>
+                    <p class="text-muted">Aucune compétence trouvée.</p>
+                    <a href="{{ path('app_competence_new') }}" class="btn btn-primary">Créer la première compétence</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

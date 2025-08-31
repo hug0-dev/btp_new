@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Controller;
 
 use App\Entity\Equipe;
@@ -13,11 +12,10 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/equipe')]
-#[IsGranted('IS_AUTHENTICATED_FULLY')]
-
-final class EquipeController extends AbstractController
+#[IsGranted('ROLE_ADMIN')]
+class EquipeController extends AbstractController
 {
-    #[Route(name: 'app_equipe_index', methods: ['GET'])]
+    #[Route('/', name: 'app_equipe_index', methods: ['GET'])]
     public function index(EquipeRepository $equipeRepository): Response
     {
         return $this->render('equipe/index.html.twig', [
@@ -33,19 +31,16 @@ final class EquipeController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $competances = $form->get('competance_equipe')->getData();
-            $equipe->setCompetanceEquipe($competances);
-
-            $ouvriers = $form->get('ouvriers')->getData();
-            $equipe->setNombre(count($ouvriers));
-
             $entityManager->persist($equipe);
 
-            foreach ($ouvriers as $ouvrier) {
-                $ouvrier->setEquipe($equipe);
-                $entityManager->persist($ouvrier);
+            // Assigner les utilisateurs à l'équipe
+            $users = $form->get('users')->getData();
+            foreach ($users as $user) {
+                $user->setEquipe($equipe);
+                $entityManager->persist($user);
             }
 
+            // Assigner le chef d'équipe
             if ($equipe->getChefEquipe()) {
                 $chef = $equipe->getChefEquipe();
                 $chef->setEquipe($equipe);
@@ -54,6 +49,7 @@ final class EquipeController extends AbstractController
 
             $entityManager->flush();
 
+            $this->addFlash('success', 'Équipe créée avec succès !');
             return $this->redirectToRoute('app_equipe_index', [], Response::HTTP_SEE_OTHER);
         }
 
@@ -78,14 +74,9 @@ final class EquipeController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $competances = $form->get('competance_equipe')->getData();
-            $equipe->setCompetanceEquipe($competances);
-
-            $ouvriers = $form->get('ouvriers')->getData();
-            $equipe->setNombre(count($ouvriers));
-
             $entityManager->flush();
 
+            $this->addFlash('success', 'Équipe mise à jour avec succès !');
             return $this->redirectToRoute('app_equipe_index', [], Response::HTTP_SEE_OTHER);
         }
 
@@ -101,6 +92,7 @@ final class EquipeController extends AbstractController
         if ($this->isCsrfTokenValid('delete'.$equipe->getId(), $request->request->get('_token'))) {
             $entityManager->remove($equipe);
             $entityManager->flush();
+            $this->addFlash('success', 'Équipe supprimée avec succès !');
         }
 
         return $this->redirectToRoute('app_equipe_index', [], Response::HTTP_SEE_OTHER);

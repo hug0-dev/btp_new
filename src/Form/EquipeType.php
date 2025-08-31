@@ -1,13 +1,12 @@
 <?php
-
 namespace App\Form;
 
 use App\Entity\Equipe;
-use App\Entity\Ouvrier;
+use App\Entity\User;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Doctrine\ORM\EntityRepository;
 
@@ -16,57 +15,37 @@ class EquipeType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('nom_equipe')
-            ->add('competance_equipe', ChoiceType::class, [
-                'choices' => [
-                    'Maçon' => 'Maçon',
-                    'Coffreur' => 'Coffreur',
-                    'Ferrailleur' => 'Ferrailleur',
-                    'Terrassier' => 'Terrassier',
-                    'Conducteur d’engins' => 'Conducteur d’engins',
-                    'Manœuvre de chantier' => 'Manœuvre de chantier',
-                    'Grutier' => 'Grutier',
-                    'Plombier' => 'Plombier',
-                    'Électricien' => 'Électricien',
-                    'Peintre en bâtiment' => 'Peintre en bâtiment',
-                    'Plâtrier' => 'Plâtrier',
-                    'Carreleur' => 'Carreleur',
-                    'Menuisier' => 'Menuisier',
-                    'Parqueteur' => 'Parqueteur',
-                    'Serrurier-métallier' => 'Serrurier-métallier',
-                    'Chauffagiste' => 'Chauffagiste',
-                    'Enduiseur' => 'Enduiseur',
-                    'Vitrificateur' => 'Vitrificateur',
-                    'Solier-moquettiste' => 'Solier-moquettiste',
-                    'Staffeur-Ornemaniste' => 'Staffeur-Ornemaniste',
-                ],
-                'multiple' => true, // Permet de cocher plusieurs choix
-                'expanded' => true, // Affiche les options sous forme de cases à cocher
-                'placeholder' => 'Sélectionnez les compétences prérequises',
-                'required' => true,
-                'attr' => ['class' => 'form-check']
-                ])
-            ->add('ouvriers', EntityType::class, [
-                'class' => Ouvrier::class,
-                'choice_label' => 'nom_ouvrier',
-                'query_builder' => function (EntityRepository $er) {
-                    return $er->createQueryBuilder('o')
-                        ->where('o.role = :role')
-                        ->setParameter('role', 'Ouvrier');  
-                },  
-                'multiple' => true,               
-                'expanded' => true,               
+            ->add('nom_equipe', TextType::class, [
+                'label' => 'Nom de l\'équipe',
+                'attr' => ['class' => 'form-control']
             ])
-            // ->add('nombre')
-            ->add('chef_equipe', EntityType::class, [
-                'class' => Ouvrier::class,
-                'choice_label' => 'nom_ouvrier',  
+            ->add('users', EntityType::class, [
+                'class' => User::class,
+                'choice_label' => 'nom',
                 'query_builder' => function (EntityRepository $er) {
-                    return $er->createQueryBuilder('o')
-                        ->where('o.role = :role')
-                        ->setParameter('role', 'Chef');
+                    return $er->createQueryBuilder('u')
+                        ->where('u.equipe IS NULL OR u.equipe = :currentEquipe')
+                        ->andWhere('JSON_CONTAINS(u.roles, :userRole) = 1')
+                        ->setParameter('userRole', '"ROLE_USER"')
+                        ->setParameter('currentEquipe', null);
+                },
+                'multiple' => true,
+                'expanded' => true,
+                'label' => 'Membres de l\'équipe',
+                'required' => false,
+            ])
+            ->add('chefEquipe', EntityType::class, [
+                'class' => User::class,
+                'choice_label' => 'nom',
+                'query_builder' => function (EntityRepository $er) {
+                    return $er->createQueryBuilder('u')
+                        ->where('JSON_CONTAINS(u.roles, :adminRole) = 1 OR JSON_CONTAINS(u.roles, :userRole) = 1')
+                        ->setParameter('adminRole', '"ROLE_ADMIN"')
+                        ->setParameter('userRole', '"ROLE_USER"');
                 },
                 'placeholder' => 'Sélectionnez un chef d\'équipe',
+                'required' => false,
+                'attr' => ['class' => 'form-control']
             ])
         ;
     }
