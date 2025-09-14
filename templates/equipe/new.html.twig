@@ -1,19 +1,76 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Créer une nouvelle Équipe{% endblock %}
+{% block title %}Créer une nouvelle équipe{% endblock %}
 
 {% block body %}
-    <div class="container mt-5">
-        <h1 class="mb-4">Créer une nouvelle Équipe</h1>
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">
+                        <i class="fas fa-users me-2"></i>
+                        Créer une nouvelle équipe
+                    </h4>
+                </div>
+                <div class="card-body">
+                    {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': true}}) }}
+                    
+                    <div class="mb-3">
+                        {{ form_label(form.nom_equipe, null, {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.nom_equipe, {'attr': {'class': 'form-control', 'placeholder': 'Ex: Équipe Bâtiment A'}}) }}
+                        {{ form_errors(form.nom_equipe) }}
+                    </div>
 
-        <div class="card">
-            <div class="card-body">
-                {{ include('equipe/_form.html.twig') }}
+                    <div class="mb-3">
+                        {{ form_label(form.chefEquipe, null, {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.chefEquipe, {'attr': {'class': 'form-select'}}) }}
+                        {{ form_errors(form.chefEquipe) }}
+                        <div class="form-text">Le chef d'équipe peut être un admin ou un utilisateur expérimenté.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form_label(form.users, null, {'label_attr': {'class': 'form-label'}}) }}
+                        <div class="row">
+                            {% for user in form.users %}
+                                <div class="col-md-6 mb-2">
+                                    <div class="form-check">
+                                        {{ form_widget(user, {'attr': {'class': 'form-check-input'}}) }}
+                                        {{ form_label(user, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        {{ form_errors(form.users) }}
+                        <div class="form-text">Sélectionnez les membres de l'équipe (utilisateurs sans équipe).</div>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ path('app_equipe_index') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-1"></i>
+                            Retour
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i>
+                            Créer l'équipe
+                        </button>
+                    </div>
+
+                    {{ form_end(form) }}
+                </div>
             </div>
         </div>
-
-        <div class="mt-3">
-            <a href="{{ path('app_equipe_index') }}" class="btn btn-secondary">Retour à la liste</a>
-        </div>
     </div>
+</div>
+
+<style>
+    .form-check-input:checked {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+    }
+    
+    .card {
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    }
+</style>
 {% endblock %}

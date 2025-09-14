@@ -1,87 +1,83 @@
 <?php
-// src/Repository/UserRepository.php - Avec méthodes personnalisées
+
 namespace App\Repository;
 
-use App\Entity\User;
+use App\Entity\UserCompetence;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
-use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
-use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
-use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
 
 /**
- * @extends ServiceEntityRepository<User>
+ * @extends ServiceEntityRepository<UserCompetence>
  */
-class UserRepository extends ServiceEntityRepository implements PasswordUpgraderInterface
+class UserCompetenceRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, User::class);
+        parent::__construct($registry, UserCompetence::class);
     }
 
     /**
-     * Used to upgrade (rehash) the user's password automatically over time.
+     * Trouve les compétences d'un utilisateur
      */
-    public function upgradePassword(PasswordAuthenticatedUserInterface $user, string $newHashedPassword): void
+    public function findByUser($user): array
     {
-        if (!$user instanceof User) {
-            throw new UnsupportedUserException(sprintf('Instances of "%s" are not supported.', $user::class));
-        }
-
-        $user->setPassword($newHashedPassword);
-        $this->getEntityManager()->persist($user);
-        $this->getEntityManager()->flush();
-    }
-
-    /**
-     * Trouve les utilisateurs avec le rôle ROLE_USER
-     */
-    public function findUsersByRole(string $role): array
-    {
-        return $this->createQueryBuilder('u')
-            ->where('u.roles LIKE :role')
-            ->setParameter('role', '%"'.$role.'"%')
-            ->orderBy('u.nom', 'ASC')
+        return $this->createQueryBuilder('uc')
+            ->andWhere('uc.user = :user')
+            ->setParameter('user', $user)
             ->getQuery()
             ->getResult();
     }
 
     /**
-     * Trouve les utilisateurs sans équipe
+     * Trouve les utilisateurs ayant une compétence donnée
      */
-    public function findUsersWithoutTeam(): array
+    public function findByCompetence($competence): array
     {
-        return $this->createQueryBuilder('u')
-            ->where('u.equipe IS NULL')
-            ->orderBy('u.nom', 'ASC')
+        return $this->createQueryBuilder('uc')
+            ->andWhere('uc.competence = :competence')
+            ->setParameter('competence', $competence)
             ->getQuery()
             ->getResult();
     }
 
     /**
-     * Trouve les utilisateurs qui peuvent être chefs (ROLE_ADMIN ou ROLE_USER)
+     * Vérifie si un utilisateur possède une compétence
      */
-    public function findPotentialLeaders(): array
+    public function hasUserCompetence($user, $competence): bool
     {
-        return $this->createQueryBuilder('u')
-            ->where('u.roles LIKE :admin_role OR u.roles LIKE :user_role')
-            ->setParameter('admin_role', '%"ROLE_ADMIN"%')
-            ->setParameter('user_role', '%"ROLE_USER"%')
-            ->orderBy('u.nom', 'ASC')
+        $result = $this->createQueryBuilder('uc')
+            ->andWhere('uc.user = :user')
+            ->andWhere('uc.competence = :competence')
+            ->setParameter('user', $user)
+            ->setParameter('competence', $competence)
             ->getQuery()
-            ->getResult();
+            ->getOneOrNullResult();
+        
+        return $result !== null;
     }
 
-    /**
-     * Trouve les administrateurs
-     */
-    public function findAdmins(): array
-    {
-        return $this->createQueryBuilder('u')
-            ->where('u.roles LIKE :role')
-            ->setParameter('role', '%"ROLE_ADMIN"%')
-            ->orderBy('u.nom', 'ASC')
-            ->getQuery()
-            ->getResult();
-    }
+    //    /**
+    //     * @return UserCompetence[] Returns an array of UserCompetence objects
+    //     */
+    //    public function findByExampleField($value): array
+    //    {
+    //        return $this->createQueryBuilder('u')
+    //            ->andWhere('u.exampleField = :val')
+    //            ->setParameter('val', $value)
+    //            ->orderBy('u.id', 'ASC')
+    //            ->setMaxResults(10)
+    //            ->getQuery()
+    //            ->getResult()
+    //        ;
+    //    }
+
+    //    public function findOneBySomeField($value): ?UserCompetence
+    //    {
+    //        return $this->createQueryBuilder('u')
+    //            ->andWhere('u.exampleField = :val')
+    //            ->setParameter('val', $value)
+    //            ->getQuery()
+    //            ->getOneOrNullResult()
+    //        ;
+    //    }
 }
