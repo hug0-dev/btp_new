@@ -54,14 +54,20 @@ class AffectationType extends AbstractType
                     ->addViolation();
             }
             
-            // Vérifier les compétences
-            $competencesRequises = $chantier->getChantierPrerequis(); 
+            // Vérifier les compétences - FIX pour éviter l'erreur Array to string
+            $competencesRequises = $chantier->getChantierPrerequis() ?? [];
             $competencesEquipe = $value->getCompetences();
 
-            if (empty($competencesEquipe) || empty(array_intersect($competencesRequises, $competencesEquipe))) {
-                $context->buildViolation('L\'équipe doit posséder au moins une des compétences requises du chantier.')
-                    ->atPath('equipe')
-                    ->addViolation();
+            if (!empty($competencesRequises)) {
+                if (empty($competencesEquipe) || empty(array_intersect($competencesRequises, $competencesEquipe))) {
+                    $competencesRequisesStr = is_array($competencesRequises) 
+                        ? implode(', ', $competencesRequises) 
+                        : (string)$competencesRequises;
+                    
+                    $context->buildViolation('L\'équipe doit posséder au moins une des compétences requises : ' . $competencesRequisesStr)
+                        ->atPath('equipe')
+                        ->addViolation();
+                }
             }
         }
     }

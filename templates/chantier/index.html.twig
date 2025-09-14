@@ -37,9 +37,11 @@
                                     <img src="{{ asset('uploads/images/' ~ chantier.image) }}" 
                                          class="card-img-top" style="height: 200px; object-fit: cover;">
                                 {% endif %}
+                                
                                 <div class="card-header">
                                     <h5 class="mb-0">{{ chantier.nom }}</h5>
                                 </div>
+                                
                                 <div class="card-body">
                                     <div class="mb-2">
                                         <strong>Période:</strong><br>
@@ -60,10 +62,15 @@
 
                                     <div class="mb-2">
                                         <strong>Compétences requises:</strong><br>
-                                        {% if chantier.chantierPrerequis|length > 0 %}
-                                            {% for competence in chantier.chantierPrerequis %}
-                                                <span class="badge bg-secondary me-1">{{ competence }}</span>
-                                            {% endfor %}
+                                        {% if chantier.chantierPrerequis is defined and chantier.chantierPrerequis is not empty %}
+                                            <div style="max-height: 50px; overflow: hidden;">
+                                                {% for competence in chantier.chantierPrerequis|slice(0, 2) %}
+                                                    <span class="badge bg-secondary me-1 mb-1">{{ competence }}</span>
+                                                {% endfor %}
+                                                {% if chantier.chantierPrerequis|length > 2 %}
+                                                    <span class="badge bg-info">+{{ chantier.chantierPrerequis|length - 2 }}</span>
+                                                {% endif %}
+                                            </div>
                                         {% else %}
                                             <span class="text-muted">Aucune</span>
                                         {% endif %}
@@ -78,6 +85,7 @@
                                         </div>
                                     {% endif %}
                                 </div>
+                                
                                 <div class="card-footer">
                                     <div class="btn-group w-100" role="group">
                                         <a href="{{ path('app_chantier_show', {'id': chantier.id}) }}" 

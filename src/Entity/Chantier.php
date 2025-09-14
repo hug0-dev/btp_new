@@ -43,6 +43,7 @@ class Chantier
     public function __construct()
     {
         $this->affectations = new ArrayCollection();
+        $this->chantier_prerequis = [];
     }
 
     public function getId(): ?int
@@ -63,13 +64,21 @@ class Chantier
 
     public function getChantierPrerequis(): ?array
     {
-        return $this->chantier_prerequis;
+        return $this->chantier_prerequis ?? [];
     }
 
     public function setChantierPrerequis(?array $chantier_prerequis): static
     {
-        $this->chantier_prerequis = $chantier_prerequis;
+        $this->chantier_prerequis = $chantier_prerequis ?? [];
         return $this;
+    }
+
+    public function getChantierPrerequisAsString(): string
+    {
+        if (empty($this->chantier_prerequis)) {
+            return 'Aucun prérequis';
+        }
+        return implode(', ', $this->chantier_prerequis);
     }
 
     public function getEffectifRequis(): ?int

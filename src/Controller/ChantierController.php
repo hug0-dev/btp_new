@@ -31,8 +31,20 @@ class ChantierController extends AbstractController
             $chantiers = [];
             if ($user->getEquipe()) {
                 foreach ($user->getEquipe()->getAffectations() as $affectation) {
-                    $chantiers[] = $affectation->getChantier();
+                    $chantier = $affectation->getChantier();
+                    // S'assurer que chantier_prerequis est bien un array
+                    if ($chantier->getChantierPrerequis() === null) {
+                        $chantier->setChantierPrerequis([]);
+                    }
+                    $chantiers[] = $chantier;
                 }
+            }
+        }
+
+        // S'assurer que tous les chantiers ont leurs prérequis comme array
+        foreach ($chantiers as $chantier) {
+            if ($chantier->getChantierPrerequis() === null) {
+                $chantier->setChantierPrerequis([]);
             }
         }
 
@@ -46,7 +58,11 @@ class ChantierController extends AbstractController
     public function new(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
     {
         $chantier = new Chantier();
-        $form = $this->createForm(ChantierType::class, $chantier);
+        
+        // Passer l'entity manager au formulaire
+        $form = $this->createForm(ChantierType::class, $chantier, [
+            'entity_manager' => $entityManager
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -68,6 +84,11 @@ class ChantierController extends AbstractController
                 }
 
                 $chantier->setImage($newFilename);
+            }
+
+            // S'assurer que les prérequis sont bien un array
+            if ($chantier->getChantierPrerequis() === null) {
+                $chantier->setChantierPrerequis([]);
             }
 
             $entityManager->persist($chantier);
@@ -106,6 +127,11 @@ class ChantierController extends AbstractController
             }
         }
 
+        // S'assurer que les prérequis sont bien un array
+        if ($chantier->getChantierPrerequis() === null) {
+            $chantier->setChantierPrerequis([]);
+        }
+
         return $this->render('chantier/show.html.twig', [
             'chantier' => $chantier,
         ]);
@@ -115,7 +141,9 @@ class ChantierController extends AbstractController
     #[IsGranted('ROLE_ADMIN')]
     public function edit(Request $request, Chantier $chantier, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
     {
-        $form = $this->createForm(ChantierType::class, $chantier);
+        $form = $this->createForm(ChantierType::class, $chantier, [
+            'entity_manager' => $entityManager
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -144,6 +172,11 @@ class ChantierController extends AbstractController
                 } catch (FileException $e) {
                     $this->addFlash('danger', 'Erreur lors de l\'upload de l\'image.');
                 }
+            }
+
+            // S'assurer que les prérequis sont bien un array
+            if ($chantier->getChantierPrerequis() === null) {
+                $chantier->setChantierPrerequis([]);
             }
 
             $entityManager->flush();
