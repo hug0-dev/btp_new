@@ -1,36 +1,131 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Détails du Chantier{% endblock %}
+{% block title %}{{ chantier.nom }}{% endblock %}
 
 {% block body %}
-<div class="container mt-5">
-    <h2 class="text-center mb-4">🏗️ Détails du Chantier</h2>
-
-    <div class="card shadow-lg border-0">
-        {% if chantier.image %}
-            <img src="{{ asset('uploads/images/' ~ chantier.image) }}" class="card-img-top" alt="Image du Chantier">
-        {% else %}
-            <img src="{{ asset('uploads/images/default-placeholder.png') }}" class="card-img-top" alt="Pas d'image">
-        {% endif %}
-        <div class="card-body">
-            <h4 class="card-title text-primary">{{ chantier.nom }}</h4>
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item"><strong>Effectif Requis :</strong> {{ chantier.effectifRequis }}</li>
-                <li class="list-group-item"><strong>Chantier Prérequis :</strong> {{ chantier.chantierPrerequis|default('-') }}</li>
-                <li class="list-group-item"><strong>Date de Début :</strong> {{ chantier.dateDebut ? chantier.dateDebut|date('d/m/Y') : '-' }}</li>
-                <li class="list-group-item"><strong>Date de Fin :</strong> {{ chantier.dateFin ? chantier.dateFin|date('d/m/Y') : '-' }}</li>
-            </ul>
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h3 class="mb-0">🏗️ {{ chantier.nom }}</h3>
+                    {% if app.user.isAdmin %}
+                        <div class="btn-group" role="group">
+                            <a href="{{ path('app_chantier_edit', {'id': chantier.id}) }}" 
+                               class="btn btn-warning btn-sm">
+                                <i class="fas fa-edit"></i> Modifier
+                            </a>
+                            {% if chantier.effectifRestant > 0 %}
+                                <a href="{{ path('app_affectation_new', {'id': chantier.id}) }}" 
+                                   class="btn btn-success btn-sm">
+                                    <i class="fas fa-plus"></i> Affecter une équipe
+                                </a>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                {% if chantier.image %}
+                    <img src="{{ asset('uploads/images/' ~ chantier.image) }}" 
+                         class="card-img-top" style="height: 300px; object-fit: cover;">
+                {% endif %}
+                
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>📅 Informations générales</h5>
+                            <table class="table table-borderless">
+                                <tr>
+                                    <td><strong>Période:</strong></td>
+                                    <td>{{ chantier.dateDebut|date('d/m/Y') }} - {{ chantier.dateFin|date('d/m/Y') }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Effectif requis:</strong></td>
+                                    <td><span class="badge bg-primary">{{ chantier.effectifRequis }}</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Effectif restant:</strong></td>
+                                    <td>
+                                        <span class="badge bg-{{ chantier.effectifRestant > 0 ? 'success' : 'danger' }}">
+                                            {{ chantier.effectifRestant }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% if chantier.chefChantier %}
+                                    <tr>
+                                        <td><strong>Chef de chantier:</strong></td>
+                                        <td><span class="badge bg-warning">{{ chantier.chefChantier.nom }}</span></td>
+                                    </tr>
+                                {% endif %}
+                            </table>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <h5>🔧 Compétences requises</h5>
+                            {% if chantier.chantierPrerequis is not empty %}
+                                <div class="mb-3">
+                                    {% for competence in chantier.chantierPrerequis %}
+                                        <span class="badge bg-secondary me-1 mb-1">{{ competence }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <p class="text-muted">Aucune compétence spécifique requise</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    {% if chantier.affectations|length > 0 %}
+                        <hr>
+                        <h5>👥 Équipes affectées</h5>
+                        <div class="row">
+                            {% for affectation in chantier.affectations %}
+                                <div class="col-md-6 mb-3">
+                                    <div class="card border-success">
+                                        <div class="card-body">
+                                            <h6 class="card-title">{{ affectation.equipe.nomEquipe }}</h6>
+                                            <p class="card-text">
+                                                <strong>Membres:</strong> {{ affectation.equipe.nombre }}<br>
+                                                {% if affectation.equipe.chefEquipe %}
+                                                    <strong>Chef:</strong> {{ affectation.equipe.chefEquipe.nom }}<br>
+                                                {% endif %}
+                                                <strong>Compétences:</strong>
+                                                {% set competencesEquipe = affectation.equipe.competences %}
+                                                {% if competencesEquipe is not empty %}
+                                                    {{ competencesEquipe|join(', ') }}
+                                                {% else %}
+                                                    <span class="text-muted">Aucune</span>
+                                                {% endif %}
+                                            </p>
+                                            <a href="{{ path('app_affectation_show', {'id': affectation.id}) }}" 
+                                               class="btn btn-outline-success btn-sm">
+                                                <i class="fas fa-eye"></i> Voir l'affectation
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info mt-3">
+                            <i class="fas fa-info-circle"></i> 
+                            Aucune équipe n'est encore affectée à ce chantier.
+                            {% if app.user.isAdmin %}
+                                <a href="{{ path('app_affectation_new', {'id': chantier.id}) }}" 
+                                   class="btn btn-success btn-sm ms-2">
+                                    Affecter une équipe
+                                </a>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="card-footer">
+                    <a href="{{ path('app_chantier_index') }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Retour à la liste
+                    </a>
+                </div>
+            </div>
         </div>
-    </div>
-
-    <div class="mt-4 text-center">
-        <a href="{{ path('app_chantier_index') }}" class="btn btn-secondary">
-            <i class="fas fa-arrow-left"></i> Retour à la liste
-        </a>
-        <a href="{{ path('app_chantier_edit', {'id': chantier.id}) }}" class="btn btn-warning">
-            <i class="fas fa-edit"></i> Modifier
-        </a>
-        {{ include('chantier/_delete_form.html.twig') }}
     </div>
 </div>
 {% endblock %}

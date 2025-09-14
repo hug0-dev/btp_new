@@ -16,9 +16,14 @@ use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\File;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\EntityManagerInterface;
 
 class ChantierType extends AbstractType
 {
+    public function __construct(private EntityManagerInterface $entityManager)
+    {
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -30,7 +35,6 @@ class ChantierType extends AbstractType
             ->add('chantier_prerequis', EntityType::class, [
                 'class' => Competence::class,
                 'choice_label' => 'nom',
-                // SUPPRESSION de choice_value qui causait l'erreur !
                 'query_builder' => function (EntityRepository $er) {
                     return $er->createQueryBuilder('c')
                         ->where('c.actif = 1')
@@ -91,6 +95,28 @@ class ChantierType extends AbstractType
                 'attr' => ['class' => 'form-control']
             ]);
 
+        // Événement CRUCIAL pour charger les compétences lors de l'édition
+        $builder->addEventListener(FormEvents::POST_SET_DATA, function (FormEvent $event) {
+            $chantier = $event->getData();
+            $form = $event->getForm();
+
+            if ($chantier && $chantier->getId()) {
+                $prerequis = $chantier->getChantierPrerequis();
+                if ($prerequis && is_array($prerequis) && count($prerequis) > 0) {
+                    // Récupérer les objets Competence depuis les noms stockés
+                    $competences = $this->entityManager->getRepository(Competence::class)
+                        ->createQueryBuilder('c')
+                        ->where('c.nom IN (:noms)')
+                        ->setParameter('noms', $prerequis)
+                        ->getQuery()
+                        ->getResult();
+                    
+                    // Définir les objets Competence dans le formulaire
+                    $form->get('chantier_prerequis')->setData($competences);
+                }
+            }
+        });
+
         // Événement pour convertir les objets Competence en noms lors de la soumission
         $builder->addEventListener(FormEvents::SUBMIT, function (FormEvent $event) {
             $chantier = $event->getData();
@@ -107,37 +133,12 @@ class ChantierType extends AbstractType
                 $chantier->setChantierPrerequis([]);
             }
         });
-
-        // Événement pour charger les compétences lors de l'édition
-        $builder->addEventListener(FormEvents::POST_SET_DATA, function (FormEvent $event) {
-            $chantier = $event->getData();
-            $form = $event->getForm();
-
-            if ($chantier && $chantier->getId()) {
-                $prerequis = $chantier->getChantierPrerequis();
-                if ($prerequis && is_array($prerequis) && count($prerequis) > 0) {
-                    // Récupérer l'EntityManager depuis les options ou via le form
-                    $em = $form->getConfig()->getOption('entity_manager');
-                    if ($em) {
-                        $competences = $em->getRepository(Competence::class)
-                            ->createQueryBuilder('c')
-                            ->where('c.nom IN (:noms)')
-                            ->setParameter('noms', $prerequis)
-                            ->getQuery()
-                            ->getResult();
-                        
-                        $form->get('chantier_prerequis')->setData($competences);
-                    }
-                }
-            }
-        });
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'data_class' => Chantier::class,
-            'entity_manager' => null,
         ]);
     }
 }

@@ -58,11 +58,7 @@ class ChantierController extends AbstractController
     public function new(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
     {
         $chantier = new Chantier();
-        
-        // Passer l'entity manager au formulaire
-        $form = $this->createForm(ChantierType::class, $chantier, [
-            'entity_manager' => $entityManager
-        ]);
+        $form = $this->createForm(ChantierType::class, $chantier);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -141,9 +137,7 @@ class ChantierController extends AbstractController
     #[IsGranted('ROLE_ADMIN')]
     public function edit(Request $request, Chantier $chantier, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
     {
-        $form = $this->createForm(ChantierType::class, $chantier, [
-            'entity_manager' => $entityManager
-        ]);
+        $form = $this->createForm(ChantierType::class, $chantier);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
