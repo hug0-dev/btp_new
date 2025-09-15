@@ -44,7 +44,8 @@ class ChantierType extends AbstractType
                 'expanded' => true,
                 'label' => 'Compétences prérequises',
                 'required' => false,
-                'attr' => ['class' => 'form-check']
+                'attr' => ['class' => 'form-check'],
+                'mapped' => false // Important : ce champ n'est pas mappé directement
             ])
             ->add('effectif_requis', IntegerType::class, [
                 'label' => 'Effectif Requis',
@@ -95,18 +96,20 @@ class ChantierType extends AbstractType
                 'attr' => ['class' => 'form-control']
             ]);
 
-        // Événement CRUCIAL pour charger les compétences lors de l'édition
+        // Événement pour charger les compétences lors de l'édition
         $builder->addEventListener(FormEvents::POST_SET_DATA, function (FormEvent $event) {
             $chantier = $event->getData();
             $form = $event->getForm();
 
             if ($chantier && $chantier->getId()) {
                 $prerequis = $chantier->getChantierPrerequis();
+                
                 if ($prerequis && is_array($prerequis) && count($prerequis) > 0) {
                     // Récupérer les objets Competence depuis les noms stockés
                     $competences = $this->entityManager->getRepository(Competence::class)
                         ->createQueryBuilder('c')
                         ->where('c.nom IN (:noms)')
+                        ->andWhere('c.actif = 1')
                         ->setParameter('noms', $prerequis)
                         ->getQuery()
                         ->getResult();
@@ -118,19 +121,35 @@ class ChantierType extends AbstractType
         });
 
         // Événement pour convertir les objets Competence en noms lors de la soumission
-        $builder->addEventListener(FormEvents::SUBMIT, function (FormEvent $event) {
+        $builder->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event) {
+            $data = $event->getData();
+            
+            // S'assurer que chantier_prerequis est bien défini comme un array
+            if (!isset($data['chantier_prerequis'])) {
+                $data['chantier_prerequis'] = [];
+            }
+            
+            $event->setData($data);
+        });
+
+        $builder->addEventListener(FormEvents::POST_SUBMIT, function (FormEvent $event) {
             $chantier = $event->getData();
             $form = $event->getForm();
 
-            $competences = $form->get('chantier_prerequis')->getData();
-            if ($competences && count($competences) > 0) {
-                $competenceNames = [];
-                foreach ($competences as $competence) {
-                    $competenceNames[] = $competence->getNom();
+            if ($chantier) {
+                $competences = $form->get('chantier_prerequis')->getData();
+                
+                if ($competences && count($competences) > 0) {
+                    $competenceNames = [];
+                    foreach ($competences as $competence) {
+                        if ($competence instanceof Competence) {
+                            $competenceNames[] = $competence->getNom();
+                        }
+                    }
+                    $chantier->setChantierPrerequis($competenceNames);
+                } else {
+                    $chantier->setChantierPrerequis([]);
                 }
-                $chantier->setChantierPrerequis($competenceNames);
-            } else {
-                $chantier->setChantierPrerequis([]);
             }
         });
     }
