@@ -60,9 +60,6 @@ class Equipe
         return $this;
     }
 
-    /**
-     * @return Collection<int, User>
-     */
     public function getUsers(): Collection
     {
         return $this->users;
@@ -87,9 +84,6 @@ class Equipe
         return $this;
     }
 
-    /**
-     * @return Collection<int, Affectation>
-     */
     public function getAffectations(): Collection
     {
         return $this->affectations;
@@ -119,9 +113,6 @@ class Equipe
         return $this->users->count();
     }
 
-    /**
-     * Retourne toutes les compétences de l'équipe (union des compétences de tous les membres)
-     */
     public function getCompetences(): array
     {
         $competences = [];

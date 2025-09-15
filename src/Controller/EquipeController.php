@@ -33,14 +33,12 @@ class EquipeController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->persist($equipe);
 
-            // Assigner les utilisateurs à l'équipe
             $users = $form->get('users')->getData();
             foreach ($users as $user) {
                 $user->setEquipe($equipe);
                 $entityManager->persist($user);
             }
 
-            // Assigner le chef d'équipe
             if ($equipe->getChefEquipe()) {
                 $chef = $equipe->getChefEquipe();
                 $chef->setEquipe($equipe);

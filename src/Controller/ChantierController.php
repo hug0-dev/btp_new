@@ -23,16 +23,13 @@ class ChantierController extends AbstractController
     {
         $user = $this->getUser();
         
-        // Si c'est un admin, il voit tous les chantiers
         if ($user->isAdmin()) {
             $chantiers = $chantierRepository->findAll();
         } else {
-            // Si c'est un utilisateur normal, il ne voit que les chantiers de son équipe
             $chantiers = [];
             if ($user->getEquipe()) {
                 foreach ($user->getEquipe()->getAffectations() as $affectation) {
                     $chantier = $affectation->getChantier();
-                    // S'assurer que chantier_prerequis est bien un array
                     if ($chantier->getChantierPrerequis() === null) {
                         $chantier->setChantierPrerequis([]);
                     }
@@ -41,7 +38,6 @@ class ChantierController extends AbstractController
             }
         }
 
-        // S'assurer que tous les chantiers ont leurs prérequis comme array
         foreach ($chantiers as $chantier) {
             if ($chantier->getChantierPrerequis() === null) {
                 $chantier->setChantierPrerequis([]);
@@ -62,7 +58,6 @@ class ChantierController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Gérer l'upload d'image
             /** @var UploadedFile $imageFile */
             $imageFile = $form->get('imageFile')->getData();
             if ($imageFile) {
@@ -82,7 +77,6 @@ class ChantierController extends AbstractController
                 $chantier->setImage($newFilename);
             }
 
-            // S'assurer que les prérequis sont bien un array
             if ($chantier->getChantierPrerequis() === null) {
                 $chantier->setChantierPrerequis([]);
             }
@@ -106,7 +100,6 @@ class ChantierController extends AbstractController
     {
         $user = $this->getUser();
         
-        // Vérifier si l'utilisateur a le droit de voir ce chantier
         if (!$user->isAdmin()) {
             $hasAccess = false;
             if ($user->getEquipe()) {
@@ -123,7 +116,6 @@ class ChantierController extends AbstractController
             }
         }
 
-        // S'assurer que les prérequis sont bien un array
         if ($chantier->getChantierPrerequis() === null) {
             $chantier->setChantierPrerequis([]);
         }
@@ -154,7 +146,6 @@ class ChantierController extends AbstractController
                         $newFilename
                     );
 
-                    // Supprimer l'ancienne image si elle existe
                     if ($chantier->getImage()) {
                         $oldImagePath = $this->getParameter('images_directory') . '/' . $chantier->getImage();
                         if (file_exists($oldImagePath)) {
@@ -168,7 +159,6 @@ class ChantierController extends AbstractController
                 }
             }
 
-            // S'assurer que les prérequis sont bien un array
             if ($chantier->getChantierPrerequis() === null) {
                 $chantier->setChantierPrerequis([]);
             }
@@ -190,7 +180,6 @@ class ChantierController extends AbstractController
     public function delete(Request $request, Chantier $chantier, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete' . $chantier->getId(), $request->request->get('_token'))) {
-            // Supprimer l'image associée
             if ($chantier->getImage()) {
                 $imagePath = $this->getParameter('images_directory') . '/' . $chantier->getImage();
                 if (file_exists($imagePath)) {

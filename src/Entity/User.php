@@ -1,5 +1,4 @@
 <?php
-// src/Entity/User.php
 namespace App\Entity;
 
 use App\Repository\UserRepository;
@@ -26,15 +25,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 100)]
     private ?string $nom = null;
 
-    /**
-     * @var list<string> The user roles
-     */
     #[ORM\Column(type: 'json')]
     private array $roles = [];
 
-    /**
-     * @var string The hashed password
-     */
     #[ORM\Column]
     private ?string $password = null;
 
@@ -85,17 +78,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * A visual identifier that represents this user.
-     */
     public function getUserIdentifier(): string
     {
         return (string) $this->email;
     }
 
-    /**
-     * @return list<string>
-     */
     public function getRoles(): array
     {
         $roles = $this->roles;
@@ -103,9 +90,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return array_unique($roles);
     }
 
-    /**
-     * @param list<string> $roles
-     */
     public function setRoles(array $roles): static
     {
         $this->roles = $roles;
@@ -125,7 +109,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function eraseCredentials(): void
     {
-        // If you store any temporary, sensitive data on the user, clear it here
     }
 
     public function getEquipe(): ?Equipe
@@ -139,9 +122,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * @return Collection<int, UserCompetence>
-     */
     public function getUserCompetences(): Collection
     {
         return $this->userCompetences;
@@ -166,17 +146,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * @return Collection<int, Chantier>
-     */
     public function getChantiersDirectes(): Collection
     {
         return $this->chantiersDirectes;
     }
 
-    /**
-     * @return Collection<int, Equipe>
-     */
     public function getEquipesDirectes(): Collection
     {
         return $this->equipesDirectes;
@@ -200,7 +174,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function removeChantiersDirecte(Chantier $chantiersDirecte): static
     {
         if ($this->chantiersDirectes->removeElement($chantiersDirecte)) {
-            // set the owning side to null (unless already changed)
             if ($chantiersDirecte->getChefChantier() === $this) {
                 $chantiersDirecte->setChefChantier(null);
             }
@@ -222,7 +195,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function removeEquipesDirecte(Equipe $equipesDirecte): static
     {
         if ($this->equipesDirectes->removeElement($equipesDirecte)) {
-            // set the owning side to null (unless already changed)
             if ($equipesDirecte->getChefEquipe() === $this) {
                 $equipesDirecte->setChefEquipe(null);
             }

@@ -26,7 +26,6 @@ class AffectationController extends AbstractController
             $affectations = $affectationRepository->findAll();
             $chantiers = $chantierRepository->findAll();
         } else {
-            // L'utilisateur ne voit que ses affectations
             $affectations = [];
             $chantiers = [];
             if ($user->getEquipe()) {
@@ -84,7 +83,6 @@ class AffectationController extends AbstractController
     {
         $user = $this->getUser();
         
-        // Vérifier si l'utilisateur a le droit de voir cette affectation
         if (!$user->isAdmin() && $user->getEquipe() !== $affectation->getEquipe()) {
             throw $this->createAccessDeniedException('Vous n\'avez pas accès à cette affectation.');
         }

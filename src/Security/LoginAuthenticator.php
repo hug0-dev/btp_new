@@ -29,7 +29,6 @@ class LoginAuthenticator extends AbstractLoginFormAuthenticator
 
     public function authenticate(Request $request): Passport
     {
-        // Assurer que la requête est bien en POST
         if (!$request->isMethod('POST')) {
             throw new AuthenticationException('Invalid authentication request.');
         }
@@ -61,7 +60,6 @@ class LoginAuthenticator extends AbstractLoginFormAuthenticator
             return new RedirectResponse($targetPath);
         }
 
-        // Redirection après connexion réussie vers la page d'accueil
         return new RedirectResponse($this->urlGenerator->generate('app_home'));
     }
 

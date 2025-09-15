@@ -8,7 +8,7 @@
         <div class="col-md-10">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h3 class="mb-0">🏗️ {{ chantier.nom }}</h3>
+                    <h3 class="mb-0">{{ chantier.nom }}</h3>
                     {% if app.user.isAdmin %}
                         <div class="btn-group" role="group">
                             <a href="{{ path('app_chantier_edit', {'id': chantier.id}) }}" 
@@ -33,7 +33,7 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-6">
-                            <h5>📅 Informations générales</h5>
+                            <h5>Informations générales</h5>
                             <table class="table table-borderless">
                                 <tr>
                                     <td><strong>Période:</strong></td>
@@ -61,7 +61,7 @@
                         </div>
                         
                         <div class="col-md-6">
-                            <h5>🔧 Compétences requises</h5>
+                            <h5>Compétences requises</h5>
                             {% if chantier.chantierPrerequis is not empty %}
                                 <div class="mb-3">
                                     {% for competence in chantier.chantierPrerequis %}
@@ -76,7 +76,7 @@
                     
                     {% if chantier.affectations|length > 0 %}
                         <hr>
-                        <h5>👥 Équipes affectées</h5>
+                        <h5>Équipes affectées</h5>
                         <div class="row">
                             {% for affectation in chantier.affectations %}
                                 <div class="col-md-6 mb-3">

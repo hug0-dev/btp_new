@@ -16,9 +16,6 @@ class UserCompetenceRepository extends ServiceEntityRepository
         parent::__construct($registry, UserCompetence::class);
     }
 
-    /**
-     * Trouve les compétences d'un utilisateur
-     */
     public function findByUser($user): array
     {
         return $this->createQueryBuilder('uc')
@@ -28,9 +25,6 @@ class UserCompetenceRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    /**
-     * Trouve les utilisateurs ayant une compétence donnée
-     */
     public function findByCompetence($competence): array
     {
         return $this->createQueryBuilder('uc')
@@ -40,9 +34,6 @@ class UserCompetenceRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    /**
-     * Vérifie si un utilisateur possède une compétence
-     */
     public function hasUserCompetence($user, $competence): bool
     {
         $result = $this->createQueryBuilder('uc')
@@ -55,29 +46,4 @@ class UserCompetenceRepository extends ServiceEntityRepository
         
         return $result !== null;
     }
-
-    //    /**
-    //     * @return UserCompetence[] Returns an array of UserCompetence objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('u')
-    //            ->andWhere('u.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('u.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
-
-    //    public function findOneBySomeField($value): ?UserCompetence
-    //    {
-    //        return $this->createQueryBuilder('u')
-    //            ->andWhere('u.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
 }

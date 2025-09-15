@@ -136,9 +136,6 @@ class Chantier
         return $this;
     }
 
-    /**
-     * @return Collection<int, Affectation>
-     */
     public function getAffectations(): Collection
     {
         return $this->affectations;

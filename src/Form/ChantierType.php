@@ -45,7 +45,7 @@ class ChantierType extends AbstractType
                 'label' => 'Compétences prérequises',
                 'required' => false,
                 'attr' => ['class' => 'form-check'],
-                'mapped' => false // Important : ce champ n'est pas mappé directement
+                'mapped' => false
             ])
             ->add('effectif_requis', IntegerType::class, [
                 'label' => 'Effectif Requis',
@@ -96,7 +96,6 @@ class ChantierType extends AbstractType
                 'attr' => ['class' => 'form-control']
             ]);
 
-        // Événement pour charger les compétences lors de l'édition
         $builder->addEventListener(FormEvents::POST_SET_DATA, function (FormEvent $event) {
             $chantier = $event->getData();
             $form = $event->getForm();
@@ -105,7 +104,6 @@ class ChantierType extends AbstractType
                 $prerequis = $chantier->getChantierPrerequis();
                 
                 if ($prerequis && is_array($prerequis) && count($prerequis) > 0) {
-                    // Récupérer les objets Competence depuis les noms stockés
                     $competences = $this->entityManager->getRepository(Competence::class)
                         ->createQueryBuilder('c')
                         ->where('c.nom IN (:noms)')
@@ -114,17 +112,14 @@ class ChantierType extends AbstractType
                         ->getQuery()
                         ->getResult();
                     
-                    // Définir les objets Competence dans le formulaire
                     $form->get('chantier_prerequis')->setData($competences);
                 }
             }
         });
 
-        // Événement pour convertir les objets Competence en noms lors de la soumission
         $builder->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event) {
             $data = $event->getData();
             
-            // S'assurer que chantier_prerequis est bien défini comme un array
             if (!isset($data['chantier_prerequis'])) {
                 $data['chantier_prerequis'] = [];
             }

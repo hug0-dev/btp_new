@@ -1,5 +1,4 @@
 <?php
-// src/Controller/HomeController.php (mis à jour)
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -15,7 +14,6 @@ class HomeController extends AbstractController
     {
         $user = $this->getUser();
         
-        // Redirection selon le rôle
         if ($user->isAdmin()) {
             return $this->render('home/admin.html.twig', [
                 'user' => $user,

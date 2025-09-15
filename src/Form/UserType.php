@@ -1,5 +1,4 @@
 <?php
-// src/Form/UserType.php - Avec gestion des compétences améliorée
 namespace App\Form;
 
 use App\Entity\User;
@@ -62,12 +61,12 @@ class UserType extends AbstractType
                         ->orderBy('c.nom', 'ASC');
                 },
                 'multiple' => true,
-                'expanded' => false, // Multi-select au lieu de checkboxes
+                'expanded' => false,
                 'mapped' => false,
                 'label' => 'Compétences',
                 'attr' => [
                     'class' => 'form-select',
-                    'size' => '8', // Affiche 8 lignes
+                    'size' => '8',
                     'style' => 'height: auto;'
                 ],
                 'help' => 'Maintenez Ctrl (Cmd sur Mac) pour sélectionner plusieurs compétences'
@@ -81,24 +80,20 @@ class UserType extends AbstractType
             ])
         ;
 
-        // Événement pour pré-remplir les compétences lors de l'édition
         $builder->addEventListener(FormEvents::POST_SET_DATA, function (FormEvent $event) {
             $user = $event->getData();
             $form = $event->getForm();
 
             if ($user && $user->getId()) {
-                // Récupérer les compétences actuelles de l'utilisateur
                 $competences = [];
                 foreach ($user->getUserCompetences() as $userCompetence) {
                     $competences[] = $userCompetence->getCompetence();
                 }
                 
-                // Pré-remplir le champ compétences
                 $form->get('competences')->setData($competences);
             }
         });
 
-        // Événement pour sauvegarder les compétences
         $builder->addEventListener(FormEvents::POST_SUBMIT, function (FormEvent $event) {
             $user = $event->getData();
             $form = $event->getForm();
@@ -106,13 +101,11 @@ class UserType extends AbstractType
             if ($user && $form->isValid()) {
                 $selectedCompetences = $form->get('competences')->getData();
                 
-                // Supprimer les anciennes relations UserCompetence
                 foreach ($user->getUserCompetences() as $userCompetence) {
                     $this->entityManager->remove($userCompetence);
                 }
                 $user->getUserCompetences()->clear();
 
-                // Créer les nouvelles relations UserCompetence
                 foreach ($selectedCompetences as $competence) {
                     $userCompetence = new UserCompetence();
                     $userCompetence->setUser($user);

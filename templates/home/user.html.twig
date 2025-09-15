@@ -4,7 +4,6 @@
 
 {% block body %}
 <div class="container mt-4">
-    {# Bannière de bienvenue #}
     <div class="row mb-4">
         <div class="col-12">
             <div class="p-4 rounded text-center text-dark" 
@@ -14,9 +13,7 @@
         </div>
     </div>
 
-    {# Cards pour utilisateur #}
     <div class="row g-4 justify-content-center">
-        {# Card Mes Chantiers #}
         <div class="col-md-6">
             <div class="card h-100 text-white" 
                  style="background: linear-gradient(135deg, #5EADF9 0%, #457EF7 100%); border-radius: 20px;">
@@ -29,7 +26,6 @@
             </div>
         </div>
 
-        {# Card Mes Affectations #}
         <div class="col-md-6">
             <div class="card h-100 text-white" 
                  style="background: linear-gradient(135deg, #5EADF9 0%, #457EF7 100%); border-radius: 20px;">
@@ -43,7 +39,6 @@
         </div>
     </div>
 
-    {# Informations utilisateur #}
     {% if user.equipe %}
     <div class="row mt-5">
         <div class="col-12">

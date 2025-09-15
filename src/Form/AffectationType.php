@@ -47,14 +47,12 @@ class AffectationType extends AbstractType
             $effectifRequis = $chantier->getEffectifRequis();
             $effectifEquipe = $value->getNombre();
             
-            // Vérifier l'effectif
             if ($effectifEquipe != $effectifRequis) {
                 $context->buildViolation('Le nombre d\'effectif de l\'équipe (' . $effectifEquipe . ') doit être égal au nombre d\'effectif requis du chantier (' . $effectifRequis . ').')
                     ->atPath('equipe')
                     ->addViolation();
             }
             
-            // Vérifier les compétences - FIX pour éviter l'erreur Array to string
             $competencesRequises = $chantier->getChantierPrerequis() ?? [];
             $competencesEquipe = $value->getCompetences();
 

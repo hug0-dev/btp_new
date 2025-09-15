@@ -4,7 +4,7 @@
 
 {% block body %}
 <div class="container mt-5">
-    <h2 class="text-center mb-4">✏️ Modifier le Chantier: {{ chantier.nom }}</h2>
+    <h2 class="text-center mb-4">Modifier le Chantier: {{ chantier.nom }}</h2>
     
     <div class="card shadow-lg border-0">
         <div class="card-body">
@@ -29,12 +29,10 @@ document.addEventListener("DOMContentLoaded", function () {
     let dateFin = document.getElementById("{{ form.date_fin.vars.id }}");
     
     if (dateDebut && dateFin) {
-        // When date_fin is changed, update the max value for date_debut
         dateFin.addEventListener("change", function () {
             dateDebut.setAttribute("max", dateFin.value);
         });
         
-        // Check that the start date is not after the end date
         dateDebut.addEventListener("change", function () {
             if (dateDebut.value && dateFin.value && dateDebut.value > dateFin.value) {
                 alert("La date de début ne peut pas être après la date de fin !");

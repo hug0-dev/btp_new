@@ -75,9 +75,6 @@ class Competence
         return $this->actif === 1;
     }
 
-    /**
-     * @return Collection<int, UserCompetence>
-     */
     public function getUserCompetences(): Collection
     {
         return $this->userCompetences;

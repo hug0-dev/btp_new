@@ -1,5 +1,4 @@
 <?php
-// src/Form/EquipeType.php - Version corrigée sans JSON_CONTAINS
 namespace App\Form;
 
 use App\Entity\Equipe;
@@ -24,7 +23,6 @@ class EquipeType extends AbstractType
                 'class' => User::class,
                 'choice_label' => 'nom',
                 'query_builder' => function (EntityRepository $er) {
-                    // Récupérer tous les utilisateurs sans équipe ou avec des rôles USER/ADMIN
                     return $er->createQueryBuilder('u')
                         ->where('u.equipe IS NULL')
                         ->orderBy('u.nom', 'ASC');
@@ -41,7 +39,6 @@ class EquipeType extends AbstractType
                 'required' => false,
                 'attr' => ['class' => 'form-control'],
                 'query_builder' => function (EntityRepository $er) {
-                    // Récupérer tous les utilisateurs (ils peuvent tous être chefs)
                     return $er->createQueryBuilder('u')
                         ->orderBy('u.nom', 'ASC');
                 },

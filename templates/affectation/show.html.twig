@@ -8,7 +8,7 @@
         <div class="col-md-10">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h3 class="mb-0">📋 Détails de l'Affectation</h3>
+                    <h3 class="mb-0">Détails de l'Affectation</h3>
                     {% if app.user.isAdmin %}
                         <div class="btn-group" role="group">
                             <a href="{{ path('app_affectation_edit', {'id': affectation.id}) }}" 
@@ -30,11 +30,10 @@
                 
                 <div class="card-body">
                     <div class="row">
-                        <!-- Informations du Chantier -->
                         <div class="col-md-6">
                             <div class="card mb-3">
                                 <div class="card-header">
-                                    <h5 class="mb-0">🏗️ Chantier</h5>
+                                    <h5 class="mb-0">Chantier</h5>
                                 </div>
                                 <div class="card-body">
                                     <h6 class="card-title">{{ affectation.chantier.nom }}</h6>
@@ -76,11 +75,10 @@
                             </div>
                         </div>
                         
-                        <!-- Informations de l'Équipe -->
                         <div class="col-md-6">
                             <div class="card mb-3">
                                 <div class="card-header">
-                                    <h5 class="mb-0">👥 Équipe Affectée</h5>
+                                    <h5 class="mb-0">Équipe Affectée</h5>
                                 </div>
                                 <div class="card-body">
                                     <h6 class="card-title">{{ affectation.equipe.nomEquipe }}</h6>
