@@ -1,24 +1,77 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Modifier l'équipe{% endblock %}
+{% block title %}Modifier l'Équipe{% endblock %}
 
 {% block body %}
-    <div class="container mt-5">
-        <h1 class="mb-4">Modifier l'équipe</h1>
+<div class="container mt-5">
+    <h1 class="mb-4">Modifier l'Équipe</h1>
 
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">Informations sur l'équipe</h5>
-                {{ include('equipe/_form.html.twig', {'button_label': 'Mettre à jour'}) }}
+    <div class="card">
+        <div class="card-body">
+            {{ form_start(form, {'attr': {'class': 'row g-3'}}) }}
+            
+            <div class="col-md-6">
+                {{ form_label(form.nom_equipe, 'Nom de l\'équipe', {'label_attr': {'class': 'form-label'}}) }}
+                {{ form_widget(form.nom_equipe, {'attr': {'class': 'form-control'}}) }}
+                {{ form_errors(form.nom_equipe) }}
             </div>
-        </div>
 
-        <div class="mt-4">
-            <a href="{{ path('app_equipe_index') }}" class="btn btn-secondary">Retour à la liste</a>
-        </div>
+            <div class="col-md-6">
+                {{ form_label(form.chefEquipe, 'Chef d\'équipe', {'label_attr': {'class': 'form-label'}}) }}
+                {{ form_widget(form.chefEquipe, {'attr': {'class': 'form-select'}}) }}
+                {{ form_errors(form.chefEquipe) }}
+            </div>
 
-        <div class="mt-4">
-            {{ include('equipe/_delete_form.html.twig') }}
+            <div class="col-12">
+                {{ form_label(form.users, 'Membres de l\'équipe', {'label_attr': {'class': 'form-label'}}) }}
+                <div class="row">
+                    {% for user in form.users %}
+                    <div class="col-md-4 mb-2">
+                        <div class="form-check">
+                            {{ form_widget(user, {'attr': {'class': 'form-check-input'}}) }}
+                            {{ form_label(user, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {{ form_errors(form.users) }}
+            </div>
+
+            <div class="col-12">
+                <div class="d-flex justify-content-between">
+                    <a href="{{ path('app_equipe_show', {'id': equipe.id}) }}" class="btn btn-secondary">Annuler</a>
+                    <button type="submit" class="btn btn-primary">Mettre à jour</button>
+                </div>
+            </div>
+
+            {{ form_end(form) }}
         </div>
     </div>
+
+    <!-- Informations actuelles de l'équipe -->
+    <div class="card mt-4">
+        <div class="card-header">
+            <h5>Informations actuelles</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Nom actuel :</strong> {{ equipe.nomEquipe }}</p>
+                    <p><strong>Chef actuel :</strong> {{ equipe.chefEquipe ? equipe.chefEquipe.nom : 'Aucun' }}</p>
+                    <p><strong>Nombre de membres :</strong> {{ equipe.nombre }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Compétences de l'équipe :</strong></p>
+                    {% if equipe.competences is not empty %}
+                        {% for competence in equipe.competences %}
+                            <span class="badge bg-success me-1">{{ competence }}</span>
+                        {% endfor %}
+                    {% else %}
+                        <span class="text-muted">Aucune compétence</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
